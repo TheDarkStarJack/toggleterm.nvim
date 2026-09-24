@@ -169,6 +169,8 @@ require("toggleterm").setup{
   on_stderr = fun(t: Terminal, job: number, data: string[], name: string) -- callback for processing output on stderr
   on_exit = fun(t: Terminal, job: number, exit_code: number, name: string) -- function to run when terminal process exits
   hide_numbers = true, -- hide the number column in toggleterm buffers
+  number = nil, -- show absolute line numbers in toggleterm buffers (overrides hide_numbers)
+  relativenumber = nil, -- show relative line numbers in toggleterm buffers (overrides hide_numbers)
   shade_filetypes = {},
   autochdir = false, -- when neovim changes it current directory the terminal will change it's own when next it's opened
   highlights = {

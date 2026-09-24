@@ -21,6 +21,8 @@ local function shade(color, factor) return colors.shade_color(color, factor) end
 --- @field size number
 --- @field shade_filetypes string[]
 --- @field hide_numbers boolean
+--- @field number boolean? show absolute line numbers in toggleterm buffers (overrides hide_numbers)
+--- @field relativenumber boolean? show relative line numbers in toggleterm buffers (overrides hide_numbers)
 --- @field open_mapping string | string[]
 --- @field shade_terminals boolean
 --- @field insert_mappings boolean

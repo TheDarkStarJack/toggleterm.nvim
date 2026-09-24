@@ -421,6 +421,7 @@ function Terminal:__resurrect()
   if self:is_split() then ui.resize_split(self) end
   -- set the window options including fixing height or width once the window is resized
   self:__set_options()
+  self:__set_number_options()
   ui.hl_term(self)
 end
 
@@ -441,6 +442,17 @@ function Terminal:__set_win_options()
   if config.hide_numbers then
     utils.wo_setlocal(self.window, "number", false)
     utils.wo_setlocal(self.window, "relativenumber", false)
+  end
+end
+
+---@package
+---Set the number column options for the terminal window. This cannot be done
+---in __set_win_options as termopen() resets 'number' and 'relativenumber'
+---when the terminal job starts, so this runs after the terminal has spawned.
+function Terminal:__set_number_options()
+  if config.number ~= nil then utils.wo_setlocal(self.window, "number", config.number) end
+  if config.relativenumber ~= nil then
+    utils.wo_setlocal(self.window, "relativenumber", config.relativenumber)
   end
 end
 
@@ -500,6 +512,7 @@ function Terminal:open(size, direction)
     if config.autochdir and self.dir ~= cwd then self:change_dir(cwd) end
   end
   ui.hl_term(self)
+  self:__set_number_options()
   -- NOTE: it is important that this function is called at this point. i.e. the buffer has been correctly assigned
   if self.on_open then self:on_open() end
 end

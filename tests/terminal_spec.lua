@@ -284,6 +284,19 @@ describe("ToggleTerm tests:", function()
       local ft = vim.bo[test1.bufnr].filetype
       assert.equals(constants.FILETYPE, ft)
     end)
+
+    it("should hide number columns by default", function()
+      local test1 = Terminal:new({ direction = "horizontal" }):toggle()
+      assert.is_false(vim.wo[test1.window].number)
+      assert.is_false(vim.wo[test1.window].relativenumber)
+    end)
+
+    it("should set number columns when configured", function()
+      toggleterm.setup({ hide_numbers = true, number = true, relativenumber = true })
+      local test1 = Terminal:new({ direction = "horizontal" }):toggle()
+      assert.is_true(vim.wo[test1.window].number)
+      assert.is_true(vim.wo[test1.window].relativenumber)
+    end)
   end)
 
   describe("executing commands - ", function()
