@@ -135,6 +135,7 @@ local function on_term_open()
       :__resurrect()
   end
   ui.set_winbar(term)
+  ui.set_statusline(term)
 end
 
 function M.exec_command(args, count)

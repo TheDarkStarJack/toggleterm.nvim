@@ -512,6 +512,7 @@ function Terminal:open(size, direction)
     if config.autochdir and self.dir ~= cwd then self:change_dir(cwd) end
   end
   ui.hl_term(self)
+  ui.set_statusline(self)
   self:__set_number_options()
   -- NOTE: it is important that this function is called at this point. i.e. the buffer has been correctly assigned
   if self.on_open then self:on_open() end

@@ -108,6 +108,31 @@ function M.set_winbar(term)
   utils.wo_setlocal(term.window, "winbar", value)
 end
 
+---Return the statusline text for a terminal, this can also be used as a
+---component in a statusline plugin e.g. lualine
+---@param id number
+---@return string
+function M.statusline(id)
+  local term = terms.get(id)
+  return term and config.statusline.name_formatter(term) or ""
+end
+
+---Set a window-local statusline showing the terminal's display name
+---@param term Terminal?
+function M.set_statusline(term)
+  if
+    not config.statusline.enabled
+    or not term
+    or term:is_float()
+    or not term.window
+    or not api.nvim_win_is_valid(term.window)
+  then
+    return
+  end
+  local value = fmt('%%{%%v:lua.require("toggleterm.ui").statusline(%d)%%}', term.id)
+  utils.wo_setlocal(term.window, "statusline", value)
+end
+
 ---apply highlights to a terminal
 ---if no term is passed in we use default values instead
 ---@param term Terminal?

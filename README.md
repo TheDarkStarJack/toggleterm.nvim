@@ -223,6 +223,12 @@ require("toggleterm").setup{
       return term.name
     end
   },
+  statusline = {
+    enabled = false,
+    name_formatter = function(term) --  term: Terminal
+      return term.name
+    end
+  },
   responsiveness = {
     -- breakpoint in terms of `vim.o.columns` at which terminals will start to stack on top of each other
     -- instead of next to each other
@@ -369,12 +375,45 @@ Example:
 
 ### ToggleTermSetName
 
-This function allows setting a display name for a terminal. This name is primarily used inside the winbar, and can be a more descriptive way
+This function allows setting a display name for a terminal. This name is used inside the winbar and the statusline (if `statusline.enabled` is set), and can be a more descriptive way
 to remember, which terminal is for what.
 
 You can map this to a key and call it with a count, which will then prompt you a name for the terminal with the matching ID.
 Alternatively you can call it with just the name e.g. `:ToggleTermSetName work<CR>` this will the prompt you for which terminal it should apply to.
 Lastly you can call it without any arguments, and it will prompt you for which terminal it should apply to then prompt you for the name to use.
+
+### Terminal name in the statusline
+
+Terminals created with a `name` argument e.g. `:TermNew name=work` or named via
+`:ToggleTermSetName` can show that name in the statusline of the terminal window
+by enabling the `statusline` option:
+
+```lua
+require("toggleterm").setup{
+  statusline = {
+    enabled = true,
+    name_formatter = function(term) -- term: Terminal
+      return string.format("%d:%s", term.id, term:_display_name())
+    end,
+  },
+}
+```
+
+This sets a window-local `'statusline'` for terminal windows, so it requires
+`'laststatus'` to be set to `2`. If you use a global statusline (`'laststatus'`
+set to `3`, e.g. with lualine), window-local statuslines are ignored; in that
+case call `require("toggleterm.ui").statusline()` as a component from your
+statusline plugin instead, for example with lualine:
+
+```lua
+sections = {
+  lualine_x = {
+    function() return require("toggleterm.ui").statusline(vim.b.toggle_number or 0) end,
+  },
+}
+```
+
+NOTE: when enabled, this overrides the statusline of terminal windows, similar to the `winbar` option.
 
 ### Set terminal shading
 

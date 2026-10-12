@@ -14,6 +14,10 @@ local function shade(color, factor) return colors.shade_color(color, factor) end
 ---@field name_formatter fun(term: Terminal):string
 ---@field enabled boolean
 
+---@class StatuslineOpts
+---@field name_formatter fun(term: Terminal):string
+---@field enabled boolean
+
 --- @class Responsiveness
 --- @field horizontal_breakpoint number
 
@@ -40,6 +44,7 @@ local function shade(color, factor) return colors.shade_color(color, factor) end
 --- @field float_opts table<string, any>
 --- @field highlights ToggleTermHighlights
 --- @field winbar WinbarOpts
+--- @field statusline StatuslineOpts
 --- @field autochdir boolean
 --- @field title_pos '"left"' | '"center"' | '"right"'
 --- @field responsiveness Responsiveness
@@ -64,6 +69,10 @@ local config = {
   autochdir = false,
   auto_scroll = true,
   winbar = {
+    enabled = false,
+    name_formatter = function(term) return fmt("%d:%s", term.id, term:_display_name()) end,
+  },
+  statusline = {
     enabled = false,
     name_formatter = function(term) return fmt("%d:%s", term.id, term:_display_name()) end,
   },
