@@ -18,6 +18,10 @@ local function shade(color, factor) return colors.shade_color(color, factor) end
 ---@field name_formatter fun(term: Terminal):string
 ---@field enabled boolean
 
+---@class BufferNameOpts
+---@field name_formatter fun(term: Terminal):string
+---@field enabled boolean
+
 --- @class Responsiveness
 --- @field horizontal_breakpoint number
 
@@ -45,6 +49,7 @@ local function shade(color, factor) return colors.shade_color(color, factor) end
 --- @field highlights ToggleTermHighlights
 --- @field winbar WinbarOpts
 --- @field statusline StatuslineOpts
+--- @field buffer_name BufferNameOpts
 --- @field autochdir boolean
 --- @field title_pos '"left"' | '"center"' | '"right"'
 --- @field responsiveness Responsiveness
@@ -75,6 +80,15 @@ local config = {
   statusline = {
     enabled = false,
     name_formatter = function(term) return fmt("%d:%s", term.id, term:_display_name()) end,
+  },
+  buffer_name = {
+    enabled = false,
+    name_formatter = function(term)
+      local cmd = term.cmd or M.get("shell")
+      if type(cmd) == "function" then cmd = cmd() end
+      cmd = vim.fn.fnamemodify(cmd, ":t")
+      return term.display_name and fmt("%s:%s", cmd, term.display_name) or cmd
+    end,
   },
   float_opts = {
     winblend = 0,

@@ -229,6 +229,15 @@ require("toggleterm").setup{
       return term.name
     end
   },
+  buffer_name = {
+    enabled = false,
+    name_formatter = function(term) --  term: Terminal
+      local cmd = term.cmd or vim.o.shell
+      if type(cmd) == 'function' then cmd = cmd() end
+      cmd = vim.fn.fnamemodify(cmd, ':t')
+      return term.display_name and string.format('%s:%s', cmd, term.display_name) or cmd
+    end
+  },
   responsiveness = {
     -- breakpoint in terms of `vim.o.columns` at which terminals will start to stack on top of each other
     -- instead of next to each other
@@ -414,6 +423,31 @@ sections = {
 ```
 
 NOTE: when enabled, this overrides the statusline of terminal windows, similar to the `winbar` option.
+
+### Terminal name in tabs and buffer lists
+
+By default a terminal's buffer name (shown in tab labels for `direction = 'tab'`
+terminals and in buffer pickers) is the full `term://<cwd>//<pid>:<cmd>;#toggleterm#<id>`
+string, which is hard to read. The `buffer_name` option renames terminal buffers to a
+friendly label derived from the terminal's command and display name (set via
+`:TermNew name=work`, `:ToggleTermSetName` or `TermExec ... name=work`):
+
+```lua
+require("toggleterm").setup{
+  buffer_name = {
+    enabled = true,
+  },
+}
+```
+
+With `shell = 'pwsh'` this shows `term://pwsh:work#toggleterm#2` for a terminal named
+"work" (`lazygit:work` for a custom terminal with `cmd = 'lazygit'`, `pwsh` when unnamed).
+You can also override `name_formatter` to fully customise the label.
+
+NOTE: the `term://` prefix and the `#toggleterm#<id>` suffix are kept on purpose, they are
+how toggleterm recognises its own terminals (autocommand patterns and `:ToggleTerm`
+targeting); the id also keeps the buffer name unique. Statusline plugins like bufferline
+can re-format this name further if you want an even shorter label.
 
 ### Set terminal shading
 

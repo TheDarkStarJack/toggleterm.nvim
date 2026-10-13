@@ -412,6 +412,20 @@ function Terminal:__spawn()
   })
   self.name = cmd
   self.dir = dir
+  self:__rename_buffer()
+end
+
+---@package
+---Rename the terminal buffer to "term://<label><sep>toggleterm<sep><id>" keeping
+---the machine readable parts that autocommand patterns and identify() rely on.
+function Terminal:__rename_buffer()
+  local opts = config.get("buffer_name")
+  if not opts.enabled or not self.bufnr or not api.nvim_buf_is_valid(self.bufnr) then return end
+  local label = opts.name_formatter(self)
+  if type(label) ~= "string" or label == "" then return end
+  local sep = get_comment_sep()
+  local name = fmt("term://%s%stoggleterm%s%d", label, sep, sep, self.id)
+  pcall(api.nvim_buf_set_name, self.bufnr, name)
 end
 
 ---@package

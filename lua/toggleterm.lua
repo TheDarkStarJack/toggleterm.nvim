@@ -407,7 +407,10 @@ end
 
 ---@param name string
 ---@param term Terminal
-local function set_term_name(name, term) term.display_name = name end
+local function set_term_name(name, term)
+  term.display_name = name
+  term:__rename_buffer()
+end
 
 local function request_term_name(term)
   vim.ui.input({ prompt = "Please set a name for the terminal" }, function(name)
