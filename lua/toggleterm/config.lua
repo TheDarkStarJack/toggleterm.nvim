@@ -21,6 +21,7 @@ local function shade(color, factor) return colors.shade_color(color, factor) end
 ---@class BufferNameOpts
 ---@field name_formatter fun(term: Terminal):string
 ---@field enabled boolean
+---@field id_position '"start"' | '"end"' whether the terminal id goes at the start or the end of the buffer name
 
 --- @class Responsiveness
 --- @field horizontal_breakpoint number
@@ -83,6 +84,7 @@ local config = {
   },
   buffer_name = {
     enabled = false,
+    id_position = "start",
     name_formatter = function(term)
       local cmd = term.cmd or M.get("shell")
       if type(cmd) == "function" then cmd = cmd() end

@@ -231,6 +231,7 @@ require("toggleterm").setup{
   },
   buffer_name = {
     enabled = false,
+    id_position = 'start', -- 'start' | 'end', where the terminal id is placed in the buffer name
     name_formatter = function(term) --  term: Terminal
       local cmd = term.cmd or vim.o.shell
       if type(cmd) == 'function' then cmd = cmd() end
@@ -440,14 +441,16 @@ require("toggleterm").setup{
 }
 ```
 
-With `shell = 'pwsh'` this shows `term://pwsh:work#toggleterm#2` for a terminal named
-"work" (`lazygit:work` for a custom terminal with `cmd = 'lazygit'`, `pwsh` when unnamed).
-You can also override `name_formatter` to fully customise the label.
+With `shell = 'pwsh'` this shows `term://2#pwsh:work#toggleterm` for terminal 2 named
+"work" (`3#lazygit:work` for a custom terminal with `cmd = 'lazygit'`, `1#pwsh` when
+unnamed). Set `id_position = 'end'` to place the id at the end instead i.e.
+`term://pwsh:work#toggleterm#2`. You can also override `name_formatter` to fully customise
+the label.
 
-NOTE: the `term://` prefix and the `#toggleterm#<id>` suffix are kept on purpose, they are
-how toggleterm recognises its own terminals (autocommand patterns and `:ToggleTerm`
-targeting); the id also keeps the buffer name unique. Statusline plugins like bufferline
-can re-format this name further if you want an even shorter label.
+NOTE: the `term://` scheme, the id right after it and the trailing `#toggleterm` marker are
+kept on purpose, they are how toggleterm recognises its own terminals (autocommand patterns
+and `:ToggleTerm` targeting); the id also keeps the buffer name unique. Statusline plugins
+like bufferline can re-format this name further if you want an even shorter label.
 
 ### Set terminal shading
 

@@ -416,15 +416,22 @@ function Terminal:__spawn()
 end
 
 ---@package
----Rename the terminal buffer to "term://<label><sep>toggleterm<sep><id>" keeping
----the machine readable parts that autocommand patterns and identify() rely on.
+---Rename the terminal buffer to a name of the form
+---"term://<id><sep><label><sep>toggleterm" (or with the id at the end when
+---buffer_name.id_position is "end"), keeping the machine readable parts that
+---autocommand patterns and identify() rely on.
 function Terminal:__rename_buffer()
   local opts = config.get("buffer_name")
   if not opts.enabled or not self.bufnr or not api.nvim_buf_is_valid(self.bufnr) then return end
   local label = opts.name_formatter(self)
   if type(label) ~= "string" or label == "" then return end
   local sep = get_comment_sep()
-  local name = fmt("term://%s%stoggleterm%s%d", label, sep, sep, self.id)
+  local name
+  if opts.id_position == "end" then
+    name = fmt("term://%s%stoggleterm%s%d", label, sep, sep, self.id)
+  else
+    name = fmt("term://%d%s%s%stoggleterm", self.id, sep, label, sep)
+  end
   pcall(api.nvim_buf_set_name, self.bufnr, name)
 end
 
@@ -544,17 +551,21 @@ function Terminal:toggle(size, direction)
   return self
 end
 
---- get the toggle term number from
---- the name e.g. term://~/.dotfiles//3371887:/usr/bin/zsh;#toggleterm#1
---- the number in this case is 1
+--- get the toggle term number from the buffer name. Renamed buffers put the
+--- id first e.g. term://2#pwsh:work#toggleterm, default and legacy names put
+--- it last e.g. term://~/.dotfiles//3371887:/usr/bin/zsh;#toggleterm#1
 --- @param name string?
 --- @return number?
 --- @return Terminal?
 function M.identify(name)
   name = name or api.nvim_buf_get_name(api.nvim_get_current_buf())
   local comment_sep = get_comment_sep()
-  local parts = vim.split(name, comment_sep)
-  local id = tonumber(parts[#parts])
+  -- renamed buffers start with "term://<id><comment_sep>"
+  local id = tonumber(name:match("^term://(%d+)" .. comment_sep))
+  if not id then
+    local parts = vim.split(name, comment_sep)
+    id = tonumber(parts[#parts])
+  end
   return id, terminals[id]
 end
 
